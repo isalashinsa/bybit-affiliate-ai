@@ -2,375 +2,613 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bybit Affiliate AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Short Video Maker</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      padding: 25px 15px;
-      min-height: 100vh;
-      background: #10131c;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-    }
+body {
+  margin: 0;
+  padding: 20px;
+  background: #10131c;
+  color: white;
+  font-family: Arial, sans-serif;
+}
 
-    .container {
-      max-width: 750px;
-      margin: 40px auto;
-      padding: 30px;
-      background: #1b2030;
-      border: 1px solid #30384d;
-      border-radius: 16px;
-    }
+.container {
+  max-width: 650px;
+  margin: 30px auto;
+  padding: 25px;
+  background: #1b2030;
+  border: 1px solid #30384d;
+  border-radius: 16px;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+h1 { text-align: center; }
 
-    .subtitle {
-      text-align: center;
-      color: #aab2c5;
-      margin-bottom: 30px;
-    }
+.subtitle {
+  text-align: center;
+  color: #aab2c5;
+  line-height: 1.5;
+}
 
-    label {
-      display: block;
-      margin: 20px 0 8px;
-      font-weight: bold;
-    }
+label {
+  display: block;
+  margin: 20px 0 8px;
+  font-weight: bold;
+}
 
-    input, select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #414a60;
-      border-radius: 8px;
-      background: #111624;
-      color: white;
-      font-size: 16px;
-    }
+input, textarea, select {
+  width: 100%;
+  padding: 14px;
+  background: #111624;
+  color: white;
+  border: 1px solid #414a60;
+  border-radius: 8px;
+  font-size: 16px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 25px;
-      border: none;
-      border-radius: 8px;
-      background: #f7a600;
-      color: #111111;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 18px;
+  border: none;
+  border-radius: 8px;
+  background: #f7a600;
+  color: #111;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    #status {
-      margin-top: 20px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #111624;
-      color: #c5cee0;
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-    #result {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 8px;
-      background: #111624;
-      border: 1px solid #414a60;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
+#status {
+  margin-top: 20px;
+  padding: 14px;
+  background: #111624;
+  border-radius: 8px;
+  color: #c5cee0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
 
-    .small {
-      margin-top: 20px;
-      color: #8993aa;
-      font-size: 12px;
-      text-align: center;
-    }
-  </style>
+canvas {
+  display: none;
+  width: 100%;
+  max-width: 300px;
+  margin: 20px auto;
+  border-radius: 12px;
+  background: #080d20;
+}
+
+#download {
+  display: none;
+  text-decoration: none;
+  text-align: center;
+  display: none;
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #20c982;
+  color: #071b13;
+  font-weight: bold;
+}
+
+.small {
+  text-align: center;
+  color: #8993aa;
+  font-size: 12px;
+  margin-top: 20px;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>Bybit Affiliate AI</h1>
+  <h1>AI Short Video Maker</h1>
 
-    <p class="subtitle">
-      Your AI assistant for TikTok and Facebook content
-    </p>
+  <p class="subtitle">
+    Create simple animated promotional videos from one instruction.
+  </p>
 
-    <label for="topic">Enter your topic</label>
-    <input
-      id="topic"
-      type="text"
-      placeholder="Example: Cryptocurrency for beginners"
-    >
+  <label for="topic">What video should I create?</label>
 
-    <label for="platform">Choose your platform</label>
-    <select id="platform">
-      <option value="TikTok">TikTok</option>
-      <option value="Facebook">Facebook</option>
-    </select>
+  <textarea id="topic"
+    placeholder="Example: Create a 10-second animated introduction to Bitcoin, with golden Bitcoin coins, moving charts and an exciting futuristic background."></textarea>
 
-    <label for="contentType">Choose content type</label>
-    <select id="contentType">
-      <option value="Video script">Video script</option>
-      <option value="Post">Social media post</option>
-      <option value="Advertisement">Advertisement</option>
-      <option value="Educational content">Educational content</option>
-      <option value="Marketing ideas">Marketing ideas</option>
-    </select>
+  <label for="style">Animation style</label>
 
-    <button id="generateButton" onclick="generateContent()">
-      Generate Content
-    </button>
+  <select id="style">
+    <option value="futuristic cryptocurrency">Futuristic cryptocurrency</option>
+    <option value="professional financial advertisement">Professional financial advertisement</option>
+    <option value="neon technology">Neon technology</option>
+    <option value="minimal modern graphics">Minimal modern graphics</option>
+  </select>
 
-    <div id="status">
-      Ready. Enter a topic to get started.
-    </div>
+  <button id="generateButton" onclick="generateVideo()">
+    Generate My Video
+  </button>
 
-    <div id="result"></div>
-
-    <p class="small">
-      AI-generated content should be checked before publishing.
-      Cryptocurrency involves financial risk.
-    </p>
-
+  <div id="status">
+    Ready. Enter your video instructions to begin.
   </div>
 
-  <script>
-    // SUPABASE CONNECTION
-    const SUPABASE_URL =
-      "https://hnkwfyxclycwdprpxndx.supabase.co";
+  <canvas id="videoCanvas" width="1080" height="1920"></canvas>
 
-    // SUPABASE PUBLISHABLE KEY
-    const SUPABASE_ANON_KEY =
-      "sb_publishable_EbKVI7NY3WbWxPvoSfINxQ_jpYe0N9G";
+  <a id="download" download="my-ai-short.webm">
+    Download My Video
+  </a>
+
+  <p class="small">
+    First version: 10-second animated video, without voiceover.
+    Check all financial claims before publishing.
+  </p>
+
+</div>
+
+<script>
+
+// SUPABASE CONNECTION
+
+const SUPABASE_URL =
+  "https://hnkwfyxclycwdprpxndx.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_EbKVI7NY3WbWxPvoSfINxQ_jpYe0N9G";
 
 
-    function sleep(milliseconds) {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+async function readResponse(response) {
+  const responseText = await response.text();
+
+  let data;
+
+  try {
+    data = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    throw new Error("Unexpected server response: " +
+      responseText.slice(0, 300));
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || data.message ||
+      "Server request failed.");
+  }
+
+  return data;
+}
+
+
+// ASK GEMINI TO CREATE VIDEO CONTENT
+
+async function createVideoScript(topic, style) {
+
+  const headers = {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_ANON_KEY,
+    "Authorization": "Bearer " + SUPABASE_ANON_KEY
+  };
+
+  const prompt =
+    "Create concise promotional text for a 10-second vertical " +
+    "animated cryptocurrency educational video. " +
+    "Topic: " + topic + ". " +
+    "Visual style: " + style + ". " +
+    "Write a short attractive title followed by 2 or 3 short " +
+    "sentences suitable for animated text on screen. " +
+    "Use simple English. Do not invent financial returns, " +
+    "guarantees, or unsupported claims. " +
+    "Do not include scene directions, timestamps, or hashtags.";
+
+  const startResponse = await fetch(
+    SUPABASE_URL + "/functions/v1/generate-content",
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        topic: prompt,
+        contentType: "10-second animated video script"
+      })
+    }
+  );
+
+  const startData = await readResponse(startResponse);
+
+  if (!startData.interactionId) {
+    throw new Error("Gemini did not return a generation ID.");
+  }
+
+  const delays = [3000, 5000, 8000, 10000];
+
+  for (let attempt = 0; attempt < 30; attempt++) {
+
+    await sleep(delays[Math.min(attempt, 3)]);
+
+    document.getElementById("status").textContent =
+      "Gemini is preparing your video text...\n" +
+      "Checking progress: " + (attempt + 1) + " / 30";
+
+    const checkResponse = await fetch(
+      SUPABASE_URL + "/functions/v1/check-content",
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          interactionId: startData.interactionId
+        })
+      }
+    );
+
+    const checkData = await readResponse(checkResponse);
+
+    if (checkData.status === "completed") {
+      if (!checkData.text) {
+        throw new Error("Gemini returned empty content.");
+      }
+      return checkData.text;
     }
 
-
-    async function readResponse(response) {
-      const responseText = await response.text();
-
-      let data;
-
-      try {
-        data = responseText ? JSON.parse(responseText) : {};
-      } catch {
-        throw new Error(
-          "The server returned an unexpected response: " +
-          responseText.slice(0, 500)
-        );
-      }
-
-      if (!response.ok) {
-        const message =
-          data.error ||
-          data.message ||
-          responseText ||
-          "Request failed.";
-
-        throw new Error(
-          typeof message === "string"
-            ? message
-            : JSON.stringify(message)
-        );
-      }
-
-      return data;
+    if (checkData.status === "failed") {
+      throw new Error(checkData.error || "Gemini generation failed.");
     }
 
+    if (checkData.status !== "in_progress") {
+      throw new Error("Unexpected generation status.");
+    }
+  }
 
-    async function generateContent() {
+  throw new Error(
+    "Gemini is taking longer than expected. Please try again later."
+  );
+}
 
-      const topic = document.getElementById("topic").value.trim();
-      const platform = document.getElementById("platform").value;
-      const contentType =
-        document.getElementById("contentType").value;
 
-      const button = document.getElementById("generateButton");
-      const status = document.getElementById("status");
-      const result = document.getElementById("result");
+// VIDEO DRAWING ENGINE
 
-      if (!topic) {
-        status.textContent = "Please enter a topic first.";
+function drawVideoFrame(ctx, time, title, description) {
+
+  const w = 1080;
+  const h = 1920;
+
+  const progress = time / 10;
+
+  // Background
+
+  const gradient = ctx.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, "#080d20");
+  gradient.addColorStop(0.5, "#17244b");
+  gradient.addColorStop(1, "#090d1b");
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+
+  // Animated background circles
+
+  for (let i = 0; i < 9; i++) {
+
+    const x = 120 + i * 120 +
+      Math.sin(time * 0.7 + i) * 45;
+
+    const y = 250 + i * 190 +
+      Math.cos(time * 0.5 + i) * 55;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 70 + Math.sin(time + i) * 15, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(40, 130, 255, 0.08)";
+    ctx.fill();
+  }
+
+  // Moving decorative lines
+
+  ctx.strokeStyle = "rgba(70, 160, 255, 0.18)";
+  ctx.lineWidth = 3;
+
+  for (let i = 0; i < 7; i++) {
+    const y = 500 + i * 120;
+
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y + Math.sin(time + i) * 70);
+    ctx.stroke();
+  }
+
+  // Glowing central coin
+
+  const coinY = 570 + Math.sin(time * 2) * 20;
+
+  ctx.save();
+  ctx.shadowColor = "#f7a600";
+  ctx.shadowBlur = 60;
+
+  const coinGradient = ctx.createLinearGradient(
+    350, coinY - 150, 730, coinY + 150
+  );
+
+  coinGradient.addColorStop(0, "#ffe38a");
+  coinGradient.addColorStop(0.5, "#f7a600");
+  coinGradient.addColorStop(1, "#a65b00");
+
+  ctx.fillStyle = coinGradient;
+  ctx.beginPath();
+  ctx.arc(540, coinY, 150, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+
+  ctx.strokeStyle = "#fff0b0";
+  ctx.lineWidth = 10;
+  ctx.beginPath();
+  ctx.arc(540, coinY, 125, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = "#321c00";
+  ctx.font = "bold 170px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("₿", 540, coinY + 8);
+
+  // Animated chart bars
+
+  const barHeights = [100, 160, 130, 230, 190, 300, 260];
+
+  for (let i = 0; i < barHeights.length; i++) {
+
+    const height = barHeights[i] *
+      (0.85 + Math.sin(time * 2 + i) * 0.12);
+
+    const x = 145 + i * 115;
+    const y = 1110 - height;
+
+    const barGradient = ctx.createLinearGradient(
+      0, y, 0, 1110
+    );
+
+    barGradient.addColorStop(0, "#36d9ff");
+    barGradient.addColorStop(1, "#2465ed");
+
+    ctx.fillStyle = barGradient;
+    ctx.fillRect(x, y, 55, height);
+  }
+
+  // Title
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 75px Arial";
+
+  const titleLines = wrapText(ctx, title, 850);
+
+  titleLines.slice(0, 2).forEach((line, i) => {
+    ctx.fillText(line, 540, 1300 + i * 95);
+  });
+
+  // Description
+
+  ctx.font = "38px Arial";
+  ctx.fillStyle = "#d6e5ff";
+
+  const descLines = wrapText(ctx, description, 850);
+
+  descLines.slice(0, 4).forEach((line, i) => {
+    ctx.fillText(line, 540, 1510 + i * 60);
+  });
+
+  // Footer
+
+  ctx.fillStyle = "#f7a600";
+  ctx.font = "bold 32px Arial";
+  ctx.fillText("LEARN • EXPLORE • DISCOVER", 540, 1790);
+
+  // Progress indicator
+
+  ctx.fillStyle = "rgba(255,255,255,0.2)";
+  ctx.fillRect(100, 1850, 880, 8);
+
+  ctx.fillStyle = "#f7a600";
+  ctx.fillRect(100, 1850, 880 * progress, 8);
+}
+
+
+function wrapText(ctx, text, maxWidth) {
+
+  const words = text.split(/\s+/);
+  const lines = [];
+  let line = "";
+
+  for (const word of words) {
+
+    const test = line ? line + " " + word : word;
+
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+
+  if (line) lines.push(line);
+
+  return lines;
+}
+
+
+// CREATE AND RECORD THE VIDEO
+
+async function renderVideo(fullText) {
+
+  const canvas = document.getElementById("videoCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const lines = fullText
+    .split(/\n+/)
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  const title = (lines[0] || "Discover Cryptocurrency")
+    .replace(/[*#]/g, "")
+    .slice(0, 55);
+
+  const description = lines.slice(1).join(" ")
+    .replace(/[*#]/g, "")
+    .slice(0, 250) ||
+    "Explore the world of cryptocurrency and learn something new.";
+
+  if (!canvas.captureStream || !window.MediaRecorder) {
+    throw new Error(
+      "Your browser does not support video recording. Please use a recent version of Chrome."
+    );
+  }
+
+  const stream = canvas.captureStream(30);
+
+  const mimeTypes = [
+    "video/webm;codecs=vp9",
+    "video/webm;codecs=vp8",
+    "video/webm"
+  ];
+
+  const mimeType = mimeTypes.find(type =>
+    MediaRecorder.isTypeSupported(type)
+  );
+
+  if (!mimeType) {
+    throw new Error("Your browser cannot export WebM video.");
+  }
+
+  const recorder = new MediaRecorder(stream, {
+    mimeType,
+    videoBitsPerSecond: 5000000
+  });
+
+  const chunks = [];
+
+  recorder.ondataavailable = event => {
+    if (event.data && event.data.size > 0) {
+      chunks.push(event.data);
+    }
+  };
+
+  const recordingFinished = new Promise((resolve, reject) => {
+    recorder.onstop = resolve;
+    recorder.onerror = () => reject(
+      new Error("Video recording failed.")
+    );
+  });
+
+  document.getElementById("status").textContent =
+    "Creating your animated video...\nPlease wait about 10 seconds.";
+
+  canvas.style.display = "block";
+
+  recorder.start();
+
+  const startTime = performance.now();
+
+  await new Promise(resolve => {
+
+    function animate(now) {
+
+      const elapsed = Math.min((now - startTime) / 1000, 10);
+
+      drawVideoFrame(ctx, elapsed, title, description);
+
+      if (elapsed >= 10) {
+        resolve();
         return;
       }
 
-      if (
-        !SUPABASE_ANON_KEY ||
-        SUPABASE_ANON_KEY ===
-        "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE"
-      ) {
-        status.textContent =
-          "Please add your Supabase publishable key in the code.";
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "Generating...";
-      result.style.display = "none";
-      result.textContent = "";
-
-      const headers = {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": "Bearer " + SUPABASE_ANON_KEY
-      };
-
-      try {
-
-        // STEP 1: START GENERATION
-
-        status.textContent =
-          "Sending your request to the AI...";
-
-        const startResponse = await fetch(
-          SUPABASE_URL + "/functions/v1/generate-content",
-          {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-              topic: topic,
-              contentType: platform + " " + contentType
-            })
-          }
-        );
-
-        const startData = await readResponse(startResponse);
-
-        if (!startData.interactionId) {
-          throw new Error(
-            startData.error ||
-            "The AI did not return a generation ID."
-          );
-        }
-
-        const interactionId = startData.interactionId;
-
-
-        // STEP 2: CHECK GENERATION STATUS
-
-        // Gradually increase the waiting time.
-        // Maximum scheduled waiting time is approximately 4 minutes 46 seconds.
-
-        const delays = [3000, 5000, 8000, 10000];
-
-        for (let attempt = 0; attempt < 30; attempt++) {
-
-          await sleep(
-            delays[Math.min(attempt, delays.length - 1)]
-          );
-
-          status.textContent =
-            "The AI is working on your content...\n" +
-            "Checking progress: " + (attempt + 1) + " / 30\n" +
-            "Please keep this page open.";
-
-          const checkResponse = await fetch(
-            SUPABASE_URL + "/functions/v1/check-content",
-            {
-              method: "POST",
-              headers: headers,
-              body: JSON.stringify({
-                interactionId: interactionId
-              })
-            }
-          );
-
-          const checkData = await readResponse(checkResponse);
-
-
-          // GENERATION COMPLETED
-
-          if (checkData.status === "completed") {
-
-            if (!checkData.text) {
-              throw new Error(
-                "The AI completed the request, but no text was returned."
-              );
-            }
-
-            result.textContent = checkData.text;
-            result.style.display = "block";
-
-            status.textContent =
-              "Content generated successfully!";
-
-            return;
-          }
-
-
-          // GENERATION FAILED
-
-          if (checkData.status === "failed") {
-            throw new Error(
-              checkData.error ||
-              "The AI generation failed."
-            );
-          }
-
-
-          // STILL GENERATING
-
-          if (checkData.status !== "in_progress") {
-            throw new Error(
-              "Unexpected AI status: " +
-              JSON.stringify(checkData)
-            );
-          }
-
-        }
-
-
-        // TIME LIMIT REACHED
-
-        status.textContent =
-          "Generation is taking longer than expected.\n\n" +
-          "The AI may still be working in the background. " +
-          "Please do not repeatedly click Generate Content. " +
-          "You can try again later.";
-
-      } catch (error) {
-
-        console.error("Generation error:", error);
-
-        status.textContent =
-          "Something went wrong:\n\n" + error.message;
-
-      } finally {
-
-        button.disabled = false;
-        button.textContent = "Generate Content";
-
-      }
-
+      requestAnimationFrame(animate);
     }
 
-  </script>
+    requestAnimationFrame(animate);
+  });
+
+  recorder.stop();
+
+  await recordingFinished;
+
+  stream.getTracks().forEach(track => track.stop());
+
+  const blob = new Blob(chunks, { type: mimeType });
+  const url = URL.createObjectURL(blob);
+
+  const download = document.getElementById("download");
+
+  download.href = url;
+  download.download = "my-ai-short.webm";
+  download.style.display = "block";
+
+  document.getElementById("status").textContent =
+    "Your 10-second animated video is ready!";
+}
+
+
+// MAIN BUTTON
+
+async function generateVideo() {
+
+  const topic = document.getElementById("topic").value.trim();
+  const style = document.getElementById("style").value;
+
+  const button = document.getElementById("generateButton");
+  const status = document.getElementById("status");
+  const canvas = document.getElementById("videoCanvas");
+  const download = document.getElementById("download");
+
+  if (!topic) {
+    status.textContent = "Please enter your video instructions.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Creating Video...";
+  canvas.style.display = "none";
+  download.style.display = "none";
+
+  try {
+
+    status.textContent = "Connecting to Gemini...";
+
+    const script = await createVideoScript(topic, style);
+
+    await renderVideo(script);
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      "Video creation failed:\n\n" + error.message;
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "Generate My Video";
+
+  }
+}
+
+</script>
 
 </body>
 </html>
 
-
-    
