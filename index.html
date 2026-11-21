@@ -5,27 +5,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bybit Affiliate AI</title>
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       padding: 25px 15px;
+      min-height: 100vh;
+      background: #10131c;
+      color: #ffffff;
       font-family: Arial, sans-serif;
-      background: #101522;
-      color: white;
     }
 
     .container {
       max-width: 750px;
-      margin: 35px auto;
-      background: #1b2435;
-      padding: 28px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #1b2030;
+      border: 1px solid #30384d;
       border-radius: 16px;
     }
 
-    h1 { color: #f7a600; margin-top: 0; }
-    p { color: #bdc6d6; line-height: 1.6; }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #aab2c5;
+      margin-bottom: 30px;
+    }
 
     label {
       display: block;
@@ -36,49 +49,56 @@
     input, select {
       width: 100%;
       padding: 14px;
+      border: 1px solid #414a60;
       border-radius: 8px;
-      border: 1px solid #45516a;
-      background: #101522;
+      background: #111624;
       color: white;
       font-size: 16px;
     }
 
     button {
       width: 100%;
-      margin-top: 22px;
       padding: 15px;
-      background: #f7a600;
-      color: #101522;
+      margin-top: 25px;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
+      background: #f7a600;
+      color: #111111;
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    button:disabled { opacity: 0.5; cursor: wait; }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     #status {
       margin-top: 20px;
-      color: #f7c75e;
+      padding: 12px;
+      border-radius: 8px;
+      background: #111624;
+      color: #c5cee0;
       white-space: pre-wrap;
+      line-height: 1.5;
     }
 
     #result {
+      display: none;
       margin-top: 20px;
-      padding: 18px;
-      background: #101522;
+      padding: 20px;
       border-radius: 8px;
+      background: #111624;
+      border: 1px solid #414a60;
+      line-height: 1.7;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
-      line-height: 1.7;
     }
 
-    .hidden { display: none; }
-
-    footer {
-      margin-top: 25px;
-      color: #8994a8;
+    .small {
+      margin-top: 20px;
+      color: #8993aa;
       font-size: 12px;
       text-align: center;
     }
@@ -86,16 +106,23 @@
 </head>
 
 <body>
-  <main class="container">
+
+  <div class="container">
+
     <h1>Bybit Affiliate AI</h1>
-    <p>Your independent AI assistant for creating cryptocurrency
-       educational and affiliate marketing content.</p>
 
-    <label for="topic">What topic should the AI create content about?</label>
-    <input id="topic" type="text"
-      placeholder="Example: Cryptocurrency for beginners">
+    <p class="subtitle">
+      Your AI assistant for TikTok and Facebook content
+    </p>
 
-    <label for="platform">Choose a platform</label>
+    <label for="topic">Enter your topic</label>
+    <input
+      id="topic"
+      type="text"
+      placeholder="Example: Cryptocurrency for beginners"
+    >
+
+    <label for="platform">Choose your platform</label>
     <select id="platform">
       <option value="TikTok">TikTok</option>
       <option value="Facebook">Facebook</option>
@@ -103,78 +130,126 @@
 
     <label for="contentType">Choose content type</label>
     <select id="contentType">
-      <option value="TikTok video">Educational video</option>
-      <option value="Short video">Short video script</option>
-      <option value="Facebook post">Facebook post</option>
-      <option value="Affiliate marketing content">Affiliate marketing content</option>
+      <option value="Video script">Video script</option>
+      <option value="Post">Social media post</option>
+      <option value="Advertisement">Advertisement</option>
+      <option value="Educational content">Educational content</option>
+      <option value="Marketing ideas">Marketing ideas</option>
     </select>
 
-    <button id="generateBtn" onclick="generateContent()">
+    <button id="generateButton" onclick="generateContent()">
       Generate Content
     </button>
 
-    <div id="status"></div>
-    <pre id="result" class="hidden"></pre>
+    <div id="status">
+      Ready. Enter a topic to get started.
+    </div>
 
-    <footer>
-      AI-generated educational content. Crypto assets involve risk.
-      Affiliate links must be disclosed.
-    </footer>
-  </main>
+    <div id="result"></div>
+
+    <p class="small">
+      AI-generated content should be checked before publishing.
+      Cryptocurrency involves financial risk.
+    </p>
+
+  </div>
 
   <script>
-    // Supabase project configuration
+    // SUPABASE CONNECTION
     const SUPABASE_URL =
       "https://hnkwfyxclycwdprpxndx.supabase.co";
 
-    // Replace this with your Supabase publishable key.
-    // Never use your service_role key here.
+    // SUPABASE PUBLISHABLE KEY
     const SUPABASE_ANON_KEY =
       "sb_publishable_EbKVI7NY3WbWxPvoSfINxQ_jpYe0N9G";
 
-    const headers = {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_ANON_KEY,
-      "Authorization": "Bearer " + SUPABASE_ANON_KEY
-    };
 
-    const sleep = ms =>
-      new Promise(resolve => setTimeout(resolve, ms));
+    function sleep(milliseconds) {
+      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+
+    async function readResponse(response) {
+      const responseText = await response.text();
+
+      let data;
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        throw new Error(
+          "The server returned an unexpected response: " +
+          responseText.slice(0, 500)
+        );
+      }
+
+      if (!response.ok) {
+        const message =
+          data.error ||
+          data.message ||
+          responseText ||
+          "Request failed.";
+
+        throw new Error(
+          typeof message === "string"
+            ? message
+            : JSON.stringify(message)
+        );
+      }
+
+      return data;
+    }
+
 
     async function generateContent() {
+
       const topic = document.getElementById("topic").value.trim();
       const platform = document.getElementById("platform").value;
       const contentType =
         document.getElementById("contentType").value;
 
-      const button = document.getElementById("generateBtn");
+      const button = document.getElementById("generateButton");
       const status = document.getElementById("status");
       const result = document.getElementById("result");
-
-      result.classList.add("hidden");
-      result.textContent = "";
 
       if (!topic) {
         status.textContent = "Please enter a topic first.";
         return;
       }
 
-      if (SUPABASE_ANON_KEY.includes("PASTE_YOUR")) {
+      if (
+        !SUPABASE_ANON_KEY ||
+        SUPABASE_ANON_KEY ===
+        "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE"
+      ) {
         status.textContent =
-          "Website setup incomplete: add your Supabase publishable key.";
+          "Please add your Supabase publishable key in the code.";
         return;
       }
 
       button.disabled = true;
+      button.textContent = "Generating...";
+      result.style.display = "none";
+      result.textContent = "";
+
+      const headers = {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      };
 
       try {
-        status.textContent = "Starting AI content generation...";
+
+        // STEP 1: START GENERATION
+
+        status.textContent =
+          "Sending your request to the AI...";
 
         const startResponse = await fetch(
           SUPABASE_URL + "/functions/v1/generate-content",
           {
             method: "POST",
-            headers,
+            headers: headers,
             body: JSON.stringify({
               topic: topic,
               contentType: platform + " " + contentType
@@ -182,68 +257,120 @@
           }
         );
 
-        const startData = await startResponse.json();
+        const startData = await readResponse(startResponse);
 
-        if (!startResponse.ok || !startData.interactionId) {
+        if (!startData.interactionId) {
           throw new Error(
-            startData.error || "Could not start content generation."
+            startData.error ||
+            "The AI did not return a generation ID."
           );
         }
 
         const interactionId = startData.interactionId;
-        status.textContent = "AI is generating your content...";
 
-        // Check for completion without keeping the original
-        // request open.
-        for (let attempt = 0; attempt < 40; attempt++) {
-          await sleep(3000);
+
+        // STEP 2: CHECK GENERATION STATUS
+
+        // Gradually increase the waiting time.
+        // Maximum scheduled waiting time is approximately 4 minutes 46 seconds.
+
+        const delays = [3000, 5000, 8000, 10000];
+
+        for (let attempt = 0; attempt < 30; attempt++) {
+
+          await sleep(
+            delays[Math.min(attempt, delays.length - 1)]
+          );
+
+          status.textContent =
+            "The AI is working on your content...\n" +
+            "Checking progress: " + (attempt + 1) + " / 30\n" +
+            "Please keep this page open.";
 
           const checkResponse = await fetch(
             SUPABASE_URL + "/functions/v1/check-content",
             {
               method: "POST",
-              headers,
-              body: JSON.stringify({ interactionId })
+              headers: headers,
+              body: JSON.stringify({
+                interactionId: interactionId
+              })
             }
           );
 
-          const checkData = await checkResponse.json();
+          const checkData = await readResponse(checkResponse);
 
-          if (!checkResponse.ok) {
-            throw new Error(
-              checkData.error || "Could not check generation status."
-            );
-          }
+
+          // GENERATION COMPLETED
 
           if (checkData.status === "completed") {
+
             if (!checkData.text) {
-              throw new Error("Gemini returned no text.");
+              throw new Error(
+                "The AI completed the request, but no text was returned."
+              );
             }
 
-            status.textContent = "Your content is ready!";
             result.textContent = checkData.text;
-            result.classList.remove("hidden");
+            result.style.display = "block";
+
+            status.textContent =
+              "Content generated successfully!";
+
             return;
           }
 
+
+          // GENERATION FAILED
+
           if (checkData.status === "failed") {
             throw new Error(
-              checkData.error || "Gemini could not complete the request."
+              checkData.error ||
+              "The AI generation failed."
             );
           }
 
-          status.textContent =
-            "AI is still working... (" + (attempt + 1) + "/40)";
+
+          // STILL GENERATING
+
+          if (checkData.status !== "in_progress") {
+            throw new Error(
+              "Unexpected AI status: " +
+              JSON.stringify(checkData)
+            );
+          }
+
         }
 
+
+        // TIME LIMIT REACHED
+
         status.textContent =
-          "Generation is taking longer than expected. Please try again later.";
+          "Generation is taking longer than expected.\n\n" +
+          "The AI may still be working in the background. " +
+          "Please do not repeatedly click Generate Content. " +
+          "You can try again later.";
+
       } catch (error) {
-        status.textContent = "Error: " + error.message;
+
+        console.error("Generation error:", error);
+
+        status.textContent =
+          "Something went wrong:\n\n" + error.message;
+
       } finally {
+
         button.disabled = false;
+        button.textContent = "Generate Content";
+
       }
+
     }
+
   </script>
+
 </body>
 </html>
+
+
+    
