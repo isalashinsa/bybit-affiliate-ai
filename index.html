@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bybit Affiliate AI</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 25px 15px;
+      font-family: Arial, sans-serif;
+      background: #101522;
+      color: white;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 35px auto;
+      background: #1b2435;
+      padding: 28px;
+      border-radius: 16px;
+    }
+
+    h1 { color: #f7a600; margin-top: 0; }
+    p { color: #bdc6d6; line-height: 1.6; }
+
+    label {
+      display: block;
+      margin: 20px 0 8px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #45516a;
+      background: #101522;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 15px;
+      background: #f7a600;
+      color: #101522;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: 0.5; cursor: wait; }
+
+    #status {
+      margin-top: 20px;
+      color: #f7c75e;
+      white-space: pre-wrap;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 18px;
+      background: #101522;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.7;
+    }
+
+    .hidden { display: none; }
+
+    footer {
+      margin-top: 25px;
+      color: #8994a8;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Bybit Affiliate AI</h1>
+    <p>Your independent AI assistant for creating cryptocurrency
+       educational and affiliate marketing content.</p>
+
+    <label for="topic">What topic should the AI create content about?</label>
+    <input id="topic" type="text"
+      placeholder="Example: Cryptocurrency for beginners">
+
+    <label for="platform">Choose a platform</label>
+    <select id="platform">
+      <option value="TikTok">TikTok</option>
+      <option value="Facebook">Facebook</option>
+    </select>
+
+    <label for="contentType">Choose content type</label>
+    <select id="contentType">
+      <option value="TikTok video">Educational video</option>
+      <option value="Short video">Short video script</option>
+      <option value="Facebook post">Facebook post</option>
+      <option value="Affiliate marketing content">Affiliate marketing content</option>
+    </select>
+
+    <button id="generateBtn" onclick="generateContent()">
+      Generate Content
+    </button>
+
+    <div id="status"></div>
+    <pre id="result" class="hidden"></pre>
+
+    <footer>
+      AI-generated educational content. Crypto assets involve risk.
+      Affiliate links must be disclosed.
+    </footer>
+  </main>
+
+  <script>
+    // Supabase project configuration
+    const SUPABASE_URL =
+      "https://hnkwfyxclycwdprpxndx.supabase.co";
+
+    // Replace this with your Supabase publishable key.
+    // Never use your service_role key here.
+    const SUPABASE_ANON_KEY =
+      "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+
+    const headers = {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY
+    };
+
+    const sleep = ms =>
+      new Promise(resolve => setTimeout(resolve, ms));
+
+    async function generateContent() {
+      const topic = document.getElementById("topic").value.trim();
+      const platform = document.getElementById("platform").value;
+      const contentType =
+        document.getElementById("contentType").value;
+
+      const button = document.getElementById("generateBtn");
+      const status = document.getElementById("status");
+      const result = document.getElementById("result");
+
+      result.classList.add("hidden");
+      result.textContent = "";
+
+      if (!topic) {
+        status.textContent = "Please enter a topic first.";
+        return;
+      }
+
+      if (SUPABASE_ANON_KEY.includes("PASTE_YOUR")) {
+        status.textContent =
+          "Website setup incomplete: add your Supabase publishable key.";
+        return;
+      }
+
+      button.disabled = true;
+
+      try {
+        status.textContent = "Starting AI content generation...";
+
+        const startResponse = await fetch(
+          SUPABASE_URL + "/functions/v1/generate-content",
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              topic: topic,
+              contentType: platform + " " + contentType
+            })
+          }
+        );
+
+        const startData = await startResponse.json();
+
+        if (!startResponse.ok || !startData.interactionId) {
+          throw new Error(
+            startData.error || "Could not start content generation."
+          );
+        }
+
+        const interactionId = startData.interactionId;
+        status.textContent = "AI is generating your content...";
+
+        // Check for completion without keeping the original
+        // request open.
+        for (let attempt = 0; attempt < 40; attempt++) {
+          await sleep(3000);
+
+          const checkResponse = await fetch(
+            SUPABASE_URL + "/functions/v1/check-content",
+            {
+              method: "POST",
+              headers,
+              body: JSON.stringify({ interactionId })
+            }
+          );
+
+          const checkData = await checkResponse.json();
+
+          if (!checkResponse.ok) {
+            throw new Error(
+              checkData.error || "Could not check generation status."
+            );
+          }
+
+          if (checkData.status === "completed") {
+            if (!checkData.text) {
+              throw new Error("Gemini returned no text.");
+            }
+
+            status.textContent = "Your content is ready!";
+            result.textContent = checkData.text;
+            result.classList.remove("hidden");
+            return;
+          }
+
+          if (checkData.status === "failed") {
+            throw new Error(
+              checkData.error || "Gemini could not complete the request."
+            );
+          }
+
+          status.textContent =
+            "AI is still working... (" + (attempt + 1) + "/40)";
+        }
+
+        status.textContent =
+          "Generation is taking longer than expected. Please try again later.";
+      } catch (error) {
+        status.textContent = "Error: " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
